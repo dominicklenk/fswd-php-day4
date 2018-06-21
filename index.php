@@ -1,11 +1,11 @@
 <?php
 ob_start();
 session_start();
-require_once 'dbconnect.php';
+require_once 'config.php';
 
 // it will never let you open index(login) page if session is set
 if ( isset($_SESSION['user'])!="" ) {
- header("Location: home.php");
+ header("Location: dashboard.php");
  exit;
 }
 
@@ -38,20 +38,20 @@ if( isset($_POST['btn-login']) ) {
 
  // if there's no error, continue to login
  if (!$error) {
-  
+ 
   $password = hash('sha256', $pass); // password hashing
 
-  $res=mysqli_query($conn, "SELECT userId, userName, userPass FROM user WHERE userEmail='$email'");
+  $res=mysqli_query($con, "SELECT user_id, firstname, pass FROM users WHERE email='$email'");
   $row=mysqli_fetch_array($res, MYSQLI_ASSOC);
   $count = mysqli_num_rows($res); // if uname/pass correct it returns must be 1 row
-  
+ 
   if( $count == 1 && $row['userPass']==$password ) {
    $_SESSION['user'] = $row['userId'];
    header("Location: home.php");
   } else {
-   $errMSG = "Incorrect Credentials, Take your time ...";
+   $errMSG = "Incorrect Credentials, Try again...";
   }
-  
+ 
  }
 
 }
@@ -60,42 +60,43 @@ if( isset($_POST['btn-login']) ) {
 <html>
 <head>
 <title>Login & Registration System</title>
-<link rel="stylesheet" type="text/css" href="css/mystyle.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="index.css">
 </head>
 <body>
    <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" autocomplete="off">
-  
-    
+ 
+   
             <h2>Sign In.</h2>
             <hr />
-            
+           
            <?php
   if ( isset($errMSG) ) {
 echo $errMSG; ?>
-              
+             
                <?php
   }
   ?>
-          
-          
-            
-            <input type="email" name="email" class="form-control" placeholder="Your Email" value="<?php echo $email; ?>" maxlength="40" />
-        
+         
+         
+           
+            <input class="inpbox" type="email" name="email" class="form-control" placeholder="Your Email" value="<?php echo $email; ?>" maxlength="40" />
+            <br>
             <span class="text-danger"><?php echo $emailError; ?></span>
-  
-          
-            <input type="password" name="pass" class="form-control" placeholder="Your Password" maxlength="15" />
-        
+            <br>
+         
+            <input class="inpbox" type="password" name="pass" class="form-control" placeholder="Your Password" maxlength="15" />
+            <br>
            <span class="text-danger"><?php echo $passError; ?></span>
-            <hr />
+            <br>
             <button type="submit" name="btn-login">Sign In</button>
-          
-          
-            <hr />
-  
+         
+         
+            <br>
+ 
             <a href="register.php">Sign Up Here...</a>
-      
-          
+     
+         
    </form>
    </div>
 </div>
